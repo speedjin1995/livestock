@@ -249,11 +249,11 @@
 </head>
 
 <body class="hold-transition sidebar-mini">
-<div class="loading" id="spinnerLoading">
+<!--div class="loading" id="spinnerLoading">
   <div class='uil-ring-css' style='transform:scale(0.79);'>
     <div></div>
   </div>
-</div>
+</div-->
 
 <div class="wrapper">
     <div class="content-wrapper" id="mainContents">
@@ -286,7 +286,8 @@
 						<table id="supplierTable" class="table table-bordered table-striped">
 							<thead>
 								<tr>
-                                    <th>Code</th>
+                  <th>Code</th>
+                  <th>Reg No.</th>
 									<th>Name</th>
 									<th>Address</th>
 									<th>Phone</th>
@@ -324,12 +325,16 @@
                   <input type="text" class="form-control" name="code" id="code" placeholder="Enter Supplier Code" required>
                 </div>
                 <div class="form-group">
+                  <label for="name">Reg No. </label>
+                  <input type="text" class="form-control" name="reg_no" id="reg_no" placeholder="Enter Registration No">
+                </div>
+                <div class="form-group">
                   <label for="name">Supplier Name *</label>
                   <input type="text" class="form-control" name="name" id="name" placeholder="Enter Supplier Name" required>
                 </div>
                 <div class="form-group"> 
-                  <label for="address">Address *</label>
-                  <input type="text" class="form-control" name="address" id="address" placeholder="Enter  Address" required>
+                  <label for="address">Address </label>
+                  <input type="text" class="form-control" name="address" id="address" placeholder="Enter  Address" >
                 </div>
                 <div class="form-group"> 
                   <label for="address">Address 2</label>
@@ -344,12 +349,12 @@
                   <input type="text" class="form-control" name="address4" id="address4" placeholder="Enter  Address">
                 </div>
                 <div class="form-group">
-                  <label for="phone">Phone *</label>
-                  <input type="text" class="form-control" name="phone" id="phone" placeholder="Enter Phone" required>
+                  <label for="phone">Phone </label>
+                  <input type="text" class="form-control" name="phone" id="phone" placeholder="Enter Phone" >
                 </div>
                 <div class="form-group"> 
-                  <label for="email">PIC *</label>
-                  <input type="text" class="form-control" id="email" name="email" placeholder="Enter your pic" required>
+                  <label for="email">PIC </label>
+                  <input type="text" class="form-control" id="email" name="email" placeholder="Enter your pic" >
                 </div>
               </div>
             </div>
@@ -417,6 +422,7 @@ $(function () {
         },
         'columns': [
             { data: 'supplier_code' },
+            { data: 'reg_no' },
             { data: 'supplier_name' },
             { data: 'supplier_address' },
             { data: 'supplier_phone' },
@@ -436,7 +442,7 @@ $(function () {
     
     $.validator.setDefaults({
         submitHandler: function () {
-            $('#spinnerLoading').show();
+            //$('#spinnerLoading').show();
             $.post('php/suppliers.php', $('#supplierForm').serialize(), function(data){
                 var obj = JSON.parse(data); 
                 
@@ -444,25 +450,26 @@ $(function () {
                   $('#addModal').modal('hide');
                   toastr["success"](obj.message, "Success:");
                   $('#supplierTable').DataTable().ajax.reload();
-                  $('#spinnerLoading').hide();
+                  //$('#spinnerLoading').hide();
                 }
                 else if(obj.status === 'failed'){
                     toastr["error"](obj.message, "Failed:");
-                    $('#spinnerLoading').hide();
+                    //$('#spinnerLoading').hide();
                 }
                 else{
                     toastr["error"]("Something wrong when edit", "Failed:");
-                    $('#spinnerLoading').hide();
+                    //$('#spinnerLoading').hide();
                 }
             });
         }
     });
 
-    $('#spinnerLoading').hide();
+    //$('#spinnerLoading').hide();
 
     $('#addSuppliers').on('click', function(){
         $('#addModal').find('#id').val("");
         $('#addModal').find('#code').val("");
+        $('#addModal').find('#reg_no').val("");
         $('#addModal').find('#name').val("");
         $('#addModal').find('#address').val("");
         $('#addModal').find('#address2').val("");
@@ -489,13 +496,14 @@ $(function () {
 });
 
 function edit(id){
-    $('#spinnerLoading').show();
+    //$('#spinnerLoading').show();
     $.post('php/getSupplier.php', {userID: id}, function(data){
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
             $('#addModal').find('#id').val(obj.message.id);
             $('#addModal').find('#code').val(obj.message.supplier_code);
+            $('#addModal').find('#reg_no').val(obj.message.reg_no);
             $('#addModal').find('#name').val(obj.message.supplier_name);
             $('#addModal').find('#address').val(obj.message.supplier_address);
             $('#addModal').find('#address2').val(obj.message.supplier_address2);
@@ -525,28 +533,53 @@ function edit(id){
         else{
             toastr["error"]("Something wrong when activate", "Failed:");
         }
-        $('#spinnerLoading').hide();
+        //$('#spinnerLoading').hide();
     });
 }
 
 function deactivate(id){
-    $('#spinnerLoading').show();
-    $.post('php/deleteSupplier.php', {userID: id}, function(data){
+    if (confirm('Are you sure you want to delete this items?')) {
+        //$('#spinnerLoading').show();
+        $.post('php/deleteSupplier.php', {userID: id}, function(data){
+            var obj = JSON.parse(data);
+            
+            if(obj.status === 'success'){
+                toastr["success"](obj.message, "Success:");
+                $('#supplierTable').DataTable().ajax.reload();
+                //$('#spinnerLoading').hide();
+            }
+            else if(obj.status === 'failed'){
+                toastr["error"](obj.message, "Failed:");
+                //$('#spinnerLoading').hide();
+            }
+            else{
+                toastr["error"]("Something wrong when activate", "Failed:");
+                //$('#spinnerLoading').hide();
+            }
+        });
+    }
+}
+
+function reactivate(id){
+  if (confirm('Are you sure you want to reactivate this items?')) {
+    //$('#spinnerLoading').show();
+    $.post('php/reactivateSupplier.php', {userID: id}, function(data){
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
-          toastr["success"](obj.message, "Success:");
-          $('#supplierTable').DataTable().ajax.reload();
-          $('#spinnerLoading').hide();
+            toastr["success"](obj.message, "Success:");
+            $('#supplierTable').DataTable().ajax.reload();
+            //$('#spinnerLoading').hide();
         }
         else if(obj.status === 'failed'){
             toastr["error"](obj.message, "Failed:");
-            $('#spinnerLoading').hide();
+            //$('#spinnerLoading').hide();
         }
         else{
             toastr["error"]("Something wrong when activate", "Failed:");
-            $('#spinnerLoading').hide();
+            //$('#spinnerLoading').hide();
         }
     });
+  }
 }
 </script>
