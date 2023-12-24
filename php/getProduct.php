@@ -23,7 +23,6 @@ if(isset($_POST['userID'])){
             
             while ($row = $result->fetch_assoc()) {
                 $message['id'] = $row['id'];
-                $message['product_code'] = $row['product_code'];
                 $message['product_name'] = $row['product_name'];
                 $message['remark'] = $row['remark'];
             }
