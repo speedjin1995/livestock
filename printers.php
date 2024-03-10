@@ -9,6 +9,8 @@ if(!isset($_SESSION['userID'])){
 }
 else{
   $user = $_SESSION['userID'];
+  $companies = $db->query("SELECT * FROM companies WHERE deleted = '0'");
+  $users = $db->query("SELECT * FROM users WHERE deleted = '0'");
 }
 ?>
 
@@ -16,7 +18,7 @@ else{
     <div class="container-fluid">
         <div class="row mb-2">
 			<div class="col-sm-6">
-				<h1 class="m-0 text-dark">Products</h1>
+				<h1 class="m-0 text-dark">Printers</h1>
 			</div><!-- /.col -->
         </div><!-- /.row -->
     </div><!-- /.container-fluid -->
@@ -31,15 +33,9 @@ else{
 				<div class="card">
 					<div class="card-header">
                         <div class="row">
-                            <div class="col-5"></div>
-                            <div class="col-2">
-                                <input type="file" id="fileInput" accept=".xlsx, .xls" />
-                            </div>
-                            <div class="col-2">
-                                <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="importExcelbtn">Import Excel</button>
-                            </div>                            
+                            <div class="col-9"></div>                           
                             <div class="col-3">
-                                <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addProducts">Add Products</button>
+                                <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addProducts">Add Printers</button>
                             </div>
                         </div>
                     </div>
@@ -47,9 +43,11 @@ else{
 						<table id="productTable" class="table table-bordered table-striped">
 							<thead>
 								<tr>
-                                    <th>Code</th>
-									<th>Chicken Description</th>
-                                    <th>Remark</th>
+                                    <th>Printer</th>
+									<th>MAC Address</th>
+                                    <th>UDID</th>
+                                    <th>Customer</th>
+                                    <th>User</th>
 									<th>Actions</th>
 								</tr>
 							</thead>
@@ -66,7 +64,7 @@ else{
       <div class="modal-content">
         <form role="form" id="productForm">
             <div class="modal-header">
-              <h4 class="modal-title">Add Products</h4>
+              <h4 class="modal-title">Add Printers</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -74,19 +72,37 @@ else{
             <div class="modal-body">
               <div class="card-body">
                 <div class="form-group">
-                  <input type="hidden" class="form-control" id="id" name="id">
+                    <input type="hidden" class="form-control" id="id" name="id">
                 </div>
                 <div class="form-group">
-                  <label for="code">Product Code *</label>
-                  <input type="text" class="form-control" name="code" id="code" placeholder="Enter Product Code" maxlength="10" required>
+                    <label for="code">Printers *</label>
+                    <input type="text" class="form-control" name="code" id="code" placeholder="Enter Indicators" required>
                 </div>
                 <div class="form-group">
-                  <label for="product">Chicken Description *</label>
-                  <input type="text" class="form-control" name="product" id="product" placeholder="Enter Product Name" required>
+                    <label for="mac">MAC Address *</label>
+                    <input type="text" class="form-control" name="mac" id="mac" placeholder="Enter MAC Address" required>
                 </div>
-                <div class="form-group"> 
-                  <label for="remark">Remark </label>
-                  <textarea class="form-control" id="remark" name="remark" placeholder="Enter your remark"></textarea>
+                <div class="form-group">
+                    <label for="product">UDID *</label>
+                    <input type="text" class="form-control" name="udid" id="udid" placeholder="Enter UDID" required>
+                </div>
+                <div class="form-group">
+                    <label>Company *</label>
+                    <select class="form-control" id="customer" name="customer" required>
+                        <option select="selected" value="">Please Select</option>
+                        <?php while($rowCustomer2=mysqli_fetch_assoc($companies)){ ?>
+                            <option value="<?= $rowCustomer2['id'] ?>"><?= $rowCustomer2['name'] ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Users *</label>
+                    <select class="form-control" id="users" name="users" required>
+                        <option select="selected" value="">Please Select</option>
+                        <?php while($rowusers=mysqli_fetch_assoc($users)){ ?>
+                            <option value="<?= $rowusers['id'] ?>"><?= $rowusers['name'] ?></option>
+                        <?php } ?>
+                    </select>
                 </div>
               </div>
             </div>
@@ -110,21 +126,18 @@ $(function () {
         'serverSide': true,
         'serverMethod': 'post',
         'ajax': {
-            'url':'php/loadProducts.php'
+            'url':'php/loadPrinters.php'
         },
         'columns': [
-            { data: 'product_code' },
-            { data: 'product_name' },
-            { data: 'remark' },
+            { data: 'name' },
+            { data: 'mac_address' },
+            { data: 'udid' },
+            { data: 'customer' },
+            { data: 'user' },
             { 
-                data: 'deleted',
+                data: 'id',
                 render: function (data, type, row) {
-                    if (data == 0) {
-                        return '<div class="row"><div class="col-3"><button type="button" id="edit' + row.id + '" onclick="edit(' + row.id + ')" class="btn btn-success btn-sm"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" id="delete' + row.id + '" onclick="deactivate(' + row.id + ')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button></div></div>';
-                    } 
-                    else{
-                        return '<button type="button" id="reactivate' + row.id + '" onclick="reactivate(' + row.id + ')" class="btn btn-warning btn-sm">Reactivate</button>';
-                    }
+                    return '<div class="row"><div class="col-3"><button type="button" id="edit' + row.id + '" onclick="edit(' + row.id + ')" class="btn btn-success btn-sm"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" id="delete' + row.id + '" onclick="deactivate(' + row.id + ')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button></div></div>';
                 }
             }
         ],
@@ -137,7 +150,7 @@ $(function () {
     $.validator.setDefaults({
         submitHandler: function () {
             $('#spinnerLoading').show();
-            $.post('php/products.php', $('#productForm').serialize(), function(data){
+            $.post('php/printers.php', $('#productForm').serialize(), function(data){
                 var obj = JSON.parse(data); 
                 
                 if(obj.status === 'success'){
@@ -161,8 +174,10 @@ $(function () {
     $('#addProducts').on('click', function(){
         $('#addModal').find('#id').val("");
         $('#addModal').find('#code').val("");
-        $('#addModal').find('#product').val("");
-        $('#addModal').find('#remark').val("");
+        $('#addModal').find('#mac').val("");
+        $('#addModal').find('#udid').val("");
+        $('#addModal').find('#customer').val("");
+        $('#addModal').find('#users').val("");
         $('#addModal').modal('show');
         
         $('#productForm').validate({
@@ -233,14 +248,16 @@ $(function () {
 
 function edit(id){
     $('#spinnerLoading').show();
-    $.post('php/getProduct.php', {userID: id}, function(data){
+    $.post('php/getPrinter.php', {userID: id}, function(data){
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
             $('#addModal').find('#id').val(obj.message.id);
-            $('#addModal').find('#code').val(obj.message.product_code);
-            $('#addModal').find('#product').val(obj.message.product_name);
-            $('#addModal').find('#remark').val(obj.message.remark);
+            $('#addModal').find('#code').val(obj.message.name);
+            $('#addModal').find('#mac').val(obj.message.mac_address);
+            $('#addModal').find('#udid').val(obj.message.udid);
+            $('#addModal').find('#customer').val(obj.message.customer);
+            $('#addModal').find('#users').val(obj.message.users);
             $('#addModal').modal('show');
             
             $('#productForm').validate({
@@ -270,7 +287,7 @@ function edit(id){
 function deactivate(id){
     if (confirm('Are you sure you want to delete this items?')) {
         $('#spinnerLoading').show();
-        $.post('php/deleteProduct.php', {userID: id}, function(data){
+        $.post('php/deletePrinter.php', {userID: id}, function(data){
             var obj = JSON.parse(data);
             
             if(obj.status === 'success'){

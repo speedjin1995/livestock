@@ -9,7 +9,6 @@ if(!isset($_SESSION['userID'])){
 }
 else{
   $user = $_SESSION['userID'];
-  $states = $db->query("SELECT * FROM states");
 }
 ?>
 
@@ -17,7 +16,7 @@ else{
     <div class="container-fluid">
         <div class="row mb-2">
 			<div class="col-sm-6">
-				<h1 class="m-0 text-dark">Suppliers</h1>
+				<h1 class="m-0 text-dark">Companies</h1>
 			</div><!-- /.col -->
         </div><!-- /.row -->
     </div><!-- /.container-fluid -->
@@ -32,15 +31,9 @@ else{
 				<div class="card">
 					<div class="card-header">
               <div class="row">
-                  <div class="col-5"></div>
-                  <div class="col-2">
-                      <input type="file" id="fileInput" accept=".xlsx, .xls" />
-                  </div>
-                  <div class="col-2">
-                      <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="importExcelbtn">Import Excel</button>
-                  </div>                            
+                  <div class="col-9"></div>
                   <div class="col-3">
-                      <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addSuppliers">Add Suppliers</button>
+                      <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addSuppliers">Add Companies</button>
                   </div>
               </div>
           </div>
@@ -48,12 +41,11 @@ else{
 						<table id="supplierTable" class="table table-bordered table-striped">
 							<thead>
 								<tr>
-                  <th>Code</th>
                   <th>Reg No.</th>
 									<th>Name</th>
 									<th>Address</th>
 									<th>Phone</th>
-									<th>PIC</th>
+									<th>Email</th>
 									<th>Actions</th>
 								</tr>
 							</thead>
@@ -70,7 +62,7 @@ else{
       <div class="modal-content">
         <form role="form" id="supplierForm">
             <div class="modal-header">
-              <h4 class="modal-title">Add Suppliers</h4>
+              <h4 class="modal-title">Add Companies</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -81,20 +73,16 @@ else{
                   <input type="hidden" class="form-control" id="id" name="id">
                 </div>
                 <div class="form-group">
-                  <label for="name">Supplier Code *</label>
-                  <input type="text" class="form-control" name="code" id="code" placeholder="Enter Supplier Code" required>
+                  <label for="name">Reg No. *</label>
+                  <input type="text" class="form-control" name="reg_no" id="reg_no" placeholder="Enter Registration No" required>
                 </div>
                 <div class="form-group">
-                  <label for="name">Reg No. </label>
-                  <input type="text" class="form-control" name="reg_no" id="reg_no" placeholder="Enter Registration No">
-                </div>
-                <div class="form-group">
-                  <label for="name">Supplier Name *</label>
+                  <label for="name">Company Name *</label>
                   <input type="text" class="form-control" name="name" id="name" placeholder="Enter Supplier Name" required>
                 </div>
                 <div class="form-group"> 
-                  <label for="address">Address </label>
-                  <input type="text" class="form-control" name="address" id="address" placeholder="Enter  Address">
+                  <label for="address">Address *</label>
+                  <input type="text" class="form-control" name="address" id="address" placeholder="Enter  Address" required>
                 </div>
                 <div class="form-group"> 
                   <label for="address">Address 2</label>
@@ -109,21 +97,12 @@ else{
                   <input type="text" class="form-control" name="address4" id="address4" placeholder="Enter  Address">
                 </div>
                 <div class="form-group">
-                  <label>States</label>
-                  <select class="form-control" style="width: 100%;" id="states" name="states">
-                    <option selected="selected">-</option>
-                    <?php while($rowCustomer2=mysqli_fetch_assoc($states)){ ?>
-                      <option value="<?=$rowCustomer2['id'] ?>"><?=$rowCustomer2['states'] ?></option>
-                    <?php } ?>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="phone">Phone </label>
-                  <input type="text" class="form-control" name="phone" id="phone" placeholder="Enter Phone" >
+                  <label for="phone">Phone *</label>
+                  <input type="text" class="form-control" name="phone" id="phone" placeholder="Enter Phone" required>
                 </div>
                 <div class="form-group"> 
-                  <label for="email">PIC </label>
-                  <input type="text" class="form-control" id="email" name="email" placeholder="Enter your pic" >
+                  <label for="email">Email *</label>
+                  <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email" required>
                 </div>
               </div>
             </div>
@@ -147,15 +126,14 @@ $(function () {
         'serverSide': true,
         'serverMethod': 'post',
         'ajax': {
-            'url':'php/loadSupplier.php'
+            'url':'php/loadCompanies.php'
         },
         'columns': [
-          { data: 'supplier_code' },
           { data: 'reg_no' },
-          { data: 'supplier_name' },
-          { data: 'supplier_address' },
-          { data: 'supplier_phone' },
-          { data: 'pic' },
+          { data: 'name' },
+          { data: 'address' },
+          { data: 'phone' },
+          { data: 'email' },
           { 
             data: 'deleted',
             render: function (data, type, row) {
@@ -174,39 +152,37 @@ $(function () {
     });
     
     $.validator.setDefaults({
-        submitHandler: function () {
-            $('#spinnerLoading').show();
-            $.post('php/suppliers.php', $('#supplierForm').serialize(), function(data){
-                var obj = JSON.parse(data); 
-                
-                if(obj.status === 'success'){
-                    $('#addModal').modal('hide');
-                    toastr["success"](obj.message, "Success:");
-                    $('#supplierTable').DataTable().ajax.reload();
-                    $('#spinnerLoading').hide();
-                }
-                else if(obj.status === 'failed'){
-                    toastr["error"](obj.message, "Failed:");
-                    $('#spinnerLoading').hide();
-                }
-                else{
-                    toastr["error"]("Something wrong when edit", "Failed:");
-                    $('#spinnerLoading').hide();
-                }
-            });
-        }
+      submitHandler: function () {
+        $('#spinnerLoading').show();
+        $.post('php/companies.php', $('#supplierForm').serialize(), function(data){
+          var obj = JSON.parse(data); 
+          
+          if(obj.status === 'success'){
+            $('#addModal').modal('hide');
+            toastr["success"](obj.message, "Success:");
+            $('#supplierTable').DataTable().ajax.reload();
+            $('#spinnerLoading').hide();
+          }
+          else if(obj.status === 'failed'){
+            toastr["error"](obj.message, "Failed:");
+            $('#spinnerLoading').hide();
+          }
+          else{
+            toastr["error"]("Something wrong when edit", "Failed:");
+            $('#spinnerLoading').hide();
+          }
+        });
+      }
     });
 
     $('#addSuppliers').on('click', function(){
         $('#addModal').find('#id').val("");
-        $('#addModal').find('#code').val("");
         $('#addModal').find('#reg_no').val("");
         $('#addModal').find('#name').val("");
         $('#addModal').find('#address').val("");
         $('#addModal').find('#address2').val("");
         $('#addModal').find('#address3').val("");
         $('#addModal').find('#address4').val("");
-        $('#addModal').find('#states').val("");
         $('#addModal').find('#phone').val("");
         $('#addModal').find('#email').val("");
         $('#addModal').modal('show');
@@ -280,21 +256,19 @@ $(function () {
 
 function edit(id){
     $('#spinnerLoading').show();
-    $.post('php/getSupplier.php', {userID: id}, function(data){
+    $.post('php/getCompany.php', {userID: id}, function(data){
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
             $('#addModal').find('#id').val(obj.message.id);
-            $('#addModal').find('#code').val(obj.message.supplier_code);
             $('#addModal').find('#reg_no').val(obj.message.reg_no);
-            $('#addModal').find('#name').val(obj.message.supplier_name);
-            $('#addModal').find('#address').val(obj.message.supplier_address);
-            $('#addModal').find('#address2').val(obj.message.supplier_address2);
-            $('#addModal').find('#address3').val(obj.message.supplier_address3);
-            $('#addModal').find('#address4').val(obj.message.supplier_address4);
-            $('#addModal').find('#states').val(obj.message.states);
-            $('#addModal').find('#phone').val(obj.message.supplier_phone);
-            $('#addModal').find('#email').val(obj.message.pic);
+            $('#addModal').find('#name').val(obj.message.name);
+            $('#addModal').find('#address').val(obj.message.address);
+            $('#addModal').find('#address2').val(obj.message.address2);
+            $('#addModal').find('#address3').val(obj.message.address3);
+            $('#addModal').find('#address4').val(obj.message.address4);
+            $('#addModal').find('#phone').val(obj.message.phone);
+            $('#addModal').find('#email').val(obj.message.email);
             $('#addModal').modal('show');
             
             $('#supplierForm').validate({
@@ -324,7 +298,7 @@ function edit(id){
 function deactivate(id){
     if (confirm('Are you sure you want to delete this items?')) {
         $('#spinnerLoading').show();
-        $.post('php/deleteSupplier.php', {userID: id}, function(data){
+        $.post('php/deleteCompany.php', {userID: id}, function(data){
             var obj = JSON.parse(data);
             
             if(obj.status === 'success'){

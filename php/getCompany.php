@@ -6,7 +6,7 @@ session_start();
 if(isset($_POST['userID'])){
 	$id = filter_input(INPUT_POST, 'userID', FILTER_SANITIZE_STRING);
 
-    if ($update_stmt = $db->prepare("SELECT * FROM users WHERE id=?")) {
+    if ($update_stmt = $db->prepare("SELECT * FROM companies WHERE id=?")) {
         $update_stmt->bind_param('s', $id);
         
         // Execute the prepared query.
@@ -23,10 +23,14 @@ if(isset($_POST['userID'])){
             
             while ($row = $result->fetch_assoc()) {
                 $message['id'] = $row['id'];
-                $message['username'] = $row['username'];
+                $message['reg_no'] = $row['reg_no'];
                 $message['name'] = $row['name'];
-                $message['role_code'] = $row['role_code'];
-                $message['customer'] = $row['customer'];
+                $message['address'] = $row['address'];
+                $message['address2'] = $row['address2'];
+                $message['address3'] = $row['address3'];
+                $message['address4'] = $row['address4'];
+                $message['phone'] = $row['phone'];
+                $message['email'] = $row['email'];
             }
             
             echo json_encode(

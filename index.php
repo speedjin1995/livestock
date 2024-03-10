@@ -32,7 +32,7 @@ else{
 
   <title>CCB </title>
 
-  <link rel="icon" href="assets/logoSmall.jpeg" type="image">
+  <link rel="icon" href="assets/logo.png" type="image">
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
   <!-- IonIcons -->
@@ -309,8 +309,8 @@ to get the desired effect
   <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color: #3d44c1;">
     <!-- Brand Logo -->
     <a href="#" class="brand-link logo-switch" style="line-height: 5;">
-      <img src="assets/logoSmall.jpeg" alt="Sneakercube Logo" class="brand-image-xl logo-xs">
-      <img src="assets/logoSmall.jpeg" alt="Sneakercube Logo" class="brand-image-xl logo-xl" style="width: 40%;max-height: max-content;">
+      <img src="assets/logo.png" alt="Sneakercube Logo" class="brand-image-xl logo-xs">
+      <img src="assets/logo.png" alt="Sneakercube Logo" class="brand-image-xl logo-xl" style="width: 40%;max-height: max-content;">
     </a>
 
     <!-- Sidebar -->
@@ -331,118 +331,42 @@ to get the desired effect
         <ul class="nav nav-pills nav-sidebar flex-column" id="sideMenu" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
             with font-awesome or any other icon font library -->
-          <li class="nav-item has-treeview menu-open">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
-              <p>Weighing<i class="fas fa-angle-left right"></i></p>
+          <li class="nav-item">
+            <a href="#companies" data-file="companies.php"  class="nav-link link">
+              <i class="nav-icon fas fa-building"></i>
+              <p>Companies</p>
             </a>
-            <ul class="nav nav-treeview" style="display: block;">
-              <li class="nav-item">
-                <a href="#weight" data-file="weightPage.php" class="nav-link link">
-                  <i class="nav-icon fas fa-chart-pie"></i>
-                  <p>Weight Weighing</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#billboard" data-file="billboard.php" class="nav-link link">
-                  <i class="nav-icon fas fa-book"></i>
-                  <p>Weighing Report</p>
-                </a>
-              </li>
-            </ul>
           </li>
-          <?php 
-              if($role == "ADMIN"){
-                echo '<li class="nav-item">
-                <a href="#users" data-file="users.php" class="nav-link link">
-                  <i class="nav-icon fas fa-user"></i>
-                  <p>Staffs</p>
-                </a>
-              </li>
-              <li class="nav-item has-treeview">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon fas fa-database"></i>
-                  <p>Master Data<i class="fas fa-angle-left right"></i></p>
-                </a>
-                <ul class="nav nav-treeview" style="display: none;">
-                  <li class="nav-item">
-                    <a href="#customers" data-file="customers.php" class="nav-link link">
-                      <i class="nav-icon fas fa-book"></i>
-                      <p>Customers</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#suppliers" data-file="suppliers.php" class="nav-link link">
-                      <i class="nav-icon fas fa-book"></i>
-                      <p>Supplies</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#products" data-file="products.php" class="nav-link link">
-                      <i class="nav-icon fas fa-shopping-cart"></i>
-                      <p>Products</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#vehicles" data-file="vehicles.php" class="nav-link link">
-                      <i class="nav-icon fas fa-car"></i>
-                      <p>Vehicles</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#transporters" data-file="transport.php" class="nav-link link">
-                      <i class="nav-icon fas fa-box"></i>
-                      <p>Transporters</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#grades" data-file="grades.php" class="nav-link link">
-                      <i class="nav-icon fas fa-balance-scale"></i>
-                      <p>Grades</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#farms" data-file="farms.php" class="nav-link link">
-                      <i class="nav-icon fas fa-shopping-bag"></i>
-                      <p>Farms</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>';
-                  /*<li class="nav-item">
-                    <a href="#groups" data-file="groups.php" class="nav-link link">
-                      <i class="nav-icon fas fa-store"></i>
-                      <p>Groups</p>
-                    </a>
-                  </li>*/
-                
-              }
-          ?>
+          <li class="nav-item">
+            <a href="#users" data-file="users.php" class="nav-link link">
+              <i class="nav-icon fas fa-user"></i>
+              <p>Users</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#indicators" data-file="indicators.php" class="nav-link link">
+              <i class="nav-icon fas fa-chart-pie"></i>
+              <p>Indicators</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#printers" data-file="printers.php" class="nav-link link">
+              <i class="nav-icon fas fa-print"></i>
+              <p>Printer</p>
+            </a>
+          </li>
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-cogs"></i>
               <p>Settings<i class="fas fa-angle-left right"></i></p>
             </a>
-        
             <ul class="nav nav-treeview" style="display: none;">
-              <?php 
-                if($role == "ADMIN"){
-                  echo '<li class="nav-item">
-                  <a href="#company" data-file="company.php" class="nav-link link">
-                    <i class="nav-icon fas fa-building"></i>
-                    <p>Company Profile</p>
-                  </a>
-                </li>';
-                }
-              ?>
-
               <li class="nav-item">
                 <a href="#myprofile" data-file="myprofile.php" class="nav-link link">
                   <i class="nav-icon fas fa-id-badge"></i>
                   <p>Profile</p>
                 </a>
               </li>
-          
               <li class="nav-item">
                 <a href="#changepassword" data-file="changePassword.php" class="nav-link link">
                   <i class="nav-icon fas fa-key"></i>
@@ -550,7 +474,7 @@ $(function () {
       });
   });
   
-  $("a[href='#weight']").click();
+  $("a[href='#companies']").click();
 });
 </script>
 </body>

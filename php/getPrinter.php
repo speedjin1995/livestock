@@ -6,7 +6,7 @@ session_start();
 if(isset($_POST['userID'])){
 	$id = filter_input(INPUT_POST, 'userID', FILTER_SANITIZE_STRING);
 
-    if ($update_stmt = $db->prepare("SELECT * FROM products WHERE id=?")) {
+    if ($update_stmt = $db->prepare("SELECT * FROM printers WHERE id=?")) {
         $update_stmt->bind_param('s', $id);
         
         // Execute the prepared query.
@@ -23,8 +23,11 @@ if(isset($_POST['userID'])){
             
             while ($row = $result->fetch_assoc()) {
                 $message['id'] = $row['id'];
-                $message['product_name'] = $row['product_name'];
-                $message['remark'] = $row['remark'];
+                $message['name'] = $row['name'];
+                $message['mac_address'] = $row['mac_address'];
+                $message['udid'] = $row['udid'];
+                $message['customer'] = $row['customer'];
+                $message['users'] = $row['users'];
             }
             
             echo json_encode(
